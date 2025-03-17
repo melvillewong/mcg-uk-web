@@ -1,10 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isAboutDropdownOpen, setIsAboutDropdownOpen] =
+    useState<boolean>(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsAboutDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav className="bg-white shadow-md">
@@ -26,12 +45,54 @@ function Navbar() {
               >
                 Home
               </Link>
-              <Link
-                href="/about"
-                className="px-3 py-2 text-gray-700 hover:text-gray-900"
+              <div
+                className="relative"
+                onMouseEnter={() => setIsAboutDropdownOpen(true)}
+                onMouseLeave={() => setIsAboutDropdownOpen(false)}
+                ref={dropdownRef}
               >
-                About
-              </Link>
+                <Link
+                  href="/about"
+                  className="px-3 py-2 text-gray-700 hover:text-gray-900"
+                >
+                  About
+                </Link>
+
+                {isAboutDropdownOpen && (
+                  <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                    <div
+                      className="py-1"
+                      role="menu"
+                      aria-orientation="vertical"
+                    >
+                      <Link
+                        href="/about/our-story"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Our Story
+                      </Link>
+                      <Link
+                        href="/about/team"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Our Team
+                      </Link>
+                      <Link
+                        href="/about/careers"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Careers
+                      </Link>
+                      <Link
+                        href="/about/values"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Our Values
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
               <Link
                 href="/projects"
                 className="px-3 py-2 text-gray-700 hover:text-gray-900"
@@ -109,12 +170,43 @@ function Navbar() {
             >
               Home
             </Link>
-            <Link
-              href="/about"
-              className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md"
-            >
-              About
-            </Link>
+            <div>
+              <button
+                onClick={() => setIsAboutDropdownOpen(!isAboutDropdownOpen)}
+                className="w-full text-left px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md flex justify-between items-center hover:cursor-pointer"
+              >
+                About
+              </button>
+
+              {isAboutDropdownOpen && (
+                <div>
+                  <Link
+                    href="/about/our-story"
+                    className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+                  >
+                    Our Story
+                  </Link>
+                  <Link
+                    href="/about/team"
+                    className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+                  >
+                    Our Team
+                  </Link>
+                  <Link
+                    href="/about/careers"
+                    className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+                  >
+                    Careers
+                  </Link>
+                  <Link
+                    href="/about/values"
+                    className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+                  >
+                    Our Values
+                  </Link>
+                </div>
+              )}
+            </div>
             <Link
               href="/projects"
               className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md"
